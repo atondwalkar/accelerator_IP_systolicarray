@@ -12,23 +12,18 @@ module ast_systolic_array_control_v (
  acc_en,
  memsel_A,
  memsel_B,
- next,
  done,
- compress,
  busy,
- comp_add,
- comp_en,
- comp_ld
  );
 	 
-	 parameter SIZE = 16;
+	 parameter SIZE = 4;
 	 
-	 input clk, reset, start, compress;
+	 input clk, reset, start;
 	 input [$clog2(SIZE)+1:0] cycles_in;
 	 input [$clog2(SIZE):0] depth_A, width_B; //row dimensions for mem select
 	 output reg load_en, mult_en, acc_en;
-	 output reg [SIZE-1:0] memsel_A, memsel_B;
-	 output reg done, next, busy, comp_add, comp_en, comp_ld;
+	 output reg [SIZE:0] memsel_A, memsel_B;
+	 output reg done, busy;
 	 
 	 reg [3:0] state;
 	 reg [1:0] mac_cycles;
@@ -54,20 +49,11 @@ module ast_systolic_array_control_v (
 				mac_cycles <= 0;
 				//cycles_max <= 0;
 				done <= 0;
-				next <= 0;
 				busy <= 0;
-				comp_add <= 0;
-				comp_en <= 0;
-				comp_ld <= 0;
 		  end
 		  if(state == 0)
 		  begin
-				if(compress)
-				begin
-					state <= 5;
-					busy <= 1;
-				end
-				else if(start)
+				if(start)
 				begin
 					 state <= 1;
 					 //cycles_max <= (cycles_in << 1) - 1; //2n-1
@@ -85,11 +71,7 @@ module ast_systolic_array_control_v (
 					 mac_cycles <= 0;
 					 //cycles_max <= 0;
 					 done <= 0;
-					 next <= 0;
 					 busy <= 0;
-					 comp_add <= 0;
-					 comp_en <= 0;
-					 comp_ld <= 0;
 				end
 		  end
 		  if(state == 1)
@@ -105,7 +87,6 @@ module ast_systolic_array_control_v (
 									load_en <= 1;
 									mult_en <= 0;
 									acc_en <= 1;
-									next <= 0;
 								end
 						  1   :
 								begin //run multiplication
@@ -113,16 +94,17 @@ module ast_systolic_array_control_v (
 									load_en <= 0;
 									mult_en <= 1;
 									acc_en <= 0;
-									next <= 1;
 									cycles <= cycles + 1;
-									if(cycles < depth_A)
-										 memsel_A <= {memsel_A[SIZE-2:0], 1'b1}; 
+									/*if(cycles < depth_A)
+										 memsel_A <= memsel_A + 1;
 									else
-										 memsel_A <= {memsel_A[SIZE-2:0], 1'b0};
+										 memsel_A <= memsel_A;
 									if(cycles < width_B)
-										 memsel_B <= {memsel_A[SIZE-2:0], 1'b1}; 
+										 memsel_B <= memsel_B + 1; 
 									else
-										 memsel_B <= {memsel_A[SIZE-2:0], 1'b0};
+										 memsel_B <= memsel_B;*/
+								    memsel_A <= memsel_A + 1;
+								    memsel_B <= memsel_B + 1; 
 								end
 						  default :
 								begin
@@ -130,7 +112,6 @@ module ast_systolic_array_control_v (
 									load_en <= 0;
 									mult_en <= 0;
 									acc_en <= 0;
-									next <= 0;
 								end
 					 endcase
 				end
@@ -140,7 +121,6 @@ module ast_systolic_array_control_v (
 					 load_en <= 0;
 					 mult_en <= 0;
 					 acc_en <= 0;
-					 next <= 0;
 					 busy <= 1;
 				end
 		  end
@@ -156,31 +136,7 @@ module ast_systolic_array_control_v (
 				busy <= 0;
 				state <= 0;
 		  end
-		  if(state == 4)
-		  begin
-				//comp_en <= 1;
-				comp_ld <= 1;
-				comp_en <= 0;
-				comp_add <= 0;
-				state <= 6;
-		  end
-		  if(state == 5)
-		  begin
-				cycles <= cycles + 1;
-				comp_add <= 1;
-				comp_en <= 1;
-				if(cycles == depth_A)
-					state <= 4;
-		  end
-		  if(state == 6)
-		  begin
-				cycles <= 0;
-				state <= 0;
-				busy <= 0;
-				comp_ld <= 1;
-				done <= 1;
-		  end
-	 
+		  
 	 end
 	 
 	 
