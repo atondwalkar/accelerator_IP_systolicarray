@@ -27,9 +27,9 @@ if( $param ne "" ) {
 }
 
 # check if outfile specified correctly
-if($outfile =~ m/^(.+).v/) { $outfile = $1; }
+if($outfile =~ m/^(.+).sv/) { $outfile = $1; }
 else {
-    ReturnError("Outfile not speicifed properly <outfile>.v");
+    ReturnError("Outfile not speicifed properly <outfile>.sv");
 }
 
 # check for valid width
@@ -77,113 +77,97 @@ sub GenerateRTL {
     # write the first part of the module
     $dimensionminus1 = $dimension - 1;
 
-    open $fh, ">", $outfile.".v";
+    # array for generation loops
+    
+    @a = (0..$dimensionminus1);
+
+    open $fh, ">", $outfile.".sv";
     $message = <<"EOF";
 //==========================================================
 //      RTL Generated File
 //      Author: Ashish Tondwalkar
 //--------------------------------------------------
-//      Description: Systolic Array of MAC Units
+//      Description: TB for Systolic Array IP
 //--------------------------------------------------
 //      Datawidth = $width
 //      Dimension = $dimension
 //==========================================================
 
-module $outfile (
-    clk,
-    reset,
+
+
+module system_TB_sv;
+
+    parameter SIZE = 4;
+	parameter DATAWIDTH = 16;
+
+    logic clk, reset;
+	logic start, busy;
+	
+    logic [SIZE-1:0][SIZE-1:0][DATAWIDTH-1:0] matrixA = '{'{5, 2, 6, 1},'{0, 6, 2, 0},'{3, 8, 1, 4},'{1, 8, 5, 6}};
+    logic [SIZE-1:0][SIZE-1:0][DATAWIDTH-1:0] matrixB = '{'{7, 5, 8, 0},'{1, 8, 2, 6},'{9, 4, 3, 8},'{5, 3, 7, 9}};
+    logic [SIZE-1:0][SIZE-1:0][DATAWIDTH-1:0] matrix_results;
+
+    accelerator_IP_systolicarray DUT (
+        .clk(clk),
+        .reset(reset),
+        .depth_A(4),
+        .width_A(4),
+        .depth_B(4),
+        .width_B(4),
 EOF
     print $fh $message;
 
-
-    # array for generation loops
-    
-    @a = (0..$dimensionminus1);
-
-    for (@a) {
-        print $fh "    a_in_$_\,\n";
-    }
-    for (@a) {
-        print $fh "    b_in_$_\,\n";
-    }
     for my $row (@a) {
         for my $col (@a) {
-            print $fh "    dout_$row\_$col\,\n";
+            print $fh "        .a_in_$row\_$col\(matrixA[$row][$col])\,\n";
+        }
+    }
+
+    for my $row (@a) {
+        for my $col (@a) {
+            print $fh "        .b_in_$row\_$col\(matrixB[$row][$col])\,\n";
+        }
+    }
+
+    for my $row (@a) {
+        for my $col (@a) {
+            print $fh "        .dout_$row\_$col\(matrix_results[$row][$col])\,\n";
         }
     }
 
     $message = <<"EOF";
-    mult_en,
-    acc_en,
-    load_en
+        .start(start),
+        .done(done)
     );
 
-    localparam DATAWIDTH = $datawidth;
-    localparam SIZE = $dimensionminus1;
+integer i, j, k;
 
-    input clk, reset, mult_en, acc_en, load_en;
+
+	initial begin 
+		clk = 0;
+		forever begin
+		#10 clk = ~clk;
+	end end 	
+	 
+	initial begin
+		reset = 1;
+		start = 0;
+		#45;
+		reset = 0;
+
+		start = 1;
+		#40;
+
+		start = 0;
+		#1000;
+	
+		\$stop;
+	
+	end
+endmodule
+	 
 EOF
     print $fh $message;
-
-    for (@a) {
-        print $fh "    input [DATAWIDTH:0] a_in_$_\;\n";
-    }
-    for (@a) {
-        print $fh "    input [DATAWIDTH:0] b_in_$_\;\n";
-    }
-
-    for my $row (@a) {
-        for my $col (@a) {
-            print $fh "    output wire [DATAWIDTH:0] dout_$row\_$col\;\n";
-        }
-    }
-
-    $message = <<"EOF";
-
-    wire [DATAWIDTH:0] a [SIZE+1:0][SIZE+1:0]; //internal array row connections
-    wire [DATAWIDTH:0] b [SIZE+1:0][SIZE+1:0]; //internal array col connections
-
-EOF
-    print $fh $message;
-
-    # generate the stage register declarations
-    print $fh "\n    //row bounday\n";
-    for(@a) {
-        print $fh "    assign a[$_][0] = a_in_$_\;\n";
-    }
-    print $fh "\n    //col bounday\n";
-    for(@a) {
-        print $fh "    assign b[0][$_] = b_in_$_\;\n";
-    }
-
-    my $nextrow;
-    my $nextcol;
-
-    for my $row (@a) {
-        for my $col (@a) {
-            $nextrow = $row + 1;
-            $nextcol = $col + 1;
-            $message = <<"EOF";
-
-    ast_mac_v element_$row\_$col ( 
-        .clk(clk), 
-        .reset(reset), 
-        .a_in(a[$row][$col]), 
-        .b_in(b[$row][$col]), 
-        .mult_en(mult_en), 
-        .acc_en(acc_en), 
-        .load_en(load_en), 
-        .a_out(a[$row][$nextcol]), 
-        .b_out(b[$nextrow][$col]),
-        .acc_out(dout_$row\_$col)
-        );
-EOF
-            print $fh $message;
-
-        }
-    }
-
-    print $fh "endmodule\n";
 
 }
 

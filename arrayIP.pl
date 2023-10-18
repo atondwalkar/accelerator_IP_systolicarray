@@ -101,7 +101,6 @@ module $outfile (
     width_A,
     depth_B,
     width_B,
-    wen,		//write enable to push fifo
     busy,
 EOF
     print $fh $message;
@@ -125,7 +124,6 @@ EOF
     }
 
     $message = <<"EOF";
-	ren,
 	start,
 	done
 	); 	
@@ -133,7 +131,7 @@ EOF
     localparam DATAWIDTH = $width;
     localparam SIZE = $dimension;
 
-	input clk, reset, wen, ren, start;
+	input clk, reset, start;
 	input [\$clog2(SIZE):0] depth_A, width_A, depth_B, width_B;
 	output busy, done;		
 EOF
@@ -167,7 +165,7 @@ EOF
 
     $message = <<"EOF";
 
-    wire [\$clog2(SIZE):0] memsel_A, memsel_B;
+    wire [\$clog2(SIZE)+1:0] memsel_A, memsel_B;
 
 
     always @ (*)
@@ -202,8 +200,16 @@ EOF
                 print $fh "            a_mux_$col = a_in_$col\_", $row-$col, "\;\n";
             }  
         }
+
         print $fh "        end \n";
     }
+
+        print $fh "        default : \n";
+        print $fh "        begin \n";
+        for (@a) {
+            print $fh "            a_mux_$_ = 0\;\n";
+        }
+        print $fh "        end \n";
     
     $message = <<"EOF";
         endcase
@@ -240,6 +246,13 @@ EOF
         }
         print $fh "        end \n";
     }
+
+        print $fh "        default : \n";
+        print $fh "            begin \n";
+        for (@a) {
+            print $fh "            a_mux_$_ = 0 \;\n";
+        }
+        print $fh "            end \n";
     
     $message = <<"EOF";
         endcase

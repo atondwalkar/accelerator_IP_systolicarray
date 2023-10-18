@@ -16,7 +16,6 @@ module accelerator_IP_systolicarray (
     width_A,
     depth_B,
     width_B,
-    wen,		//write enable to push fifo
     busy,
     a_in_0_0,
     a_in_0_1,
@@ -66,7 +65,6 @@ module accelerator_IP_systolicarray (
     dout_3_1,
     dout_3_2,
     dout_3_3,
-	ren,
 	start,
 	done
 	); 	
@@ -74,7 +72,7 @@ module accelerator_IP_systolicarray (
     localparam DATAWIDTH = 16;
     localparam SIZE = 4;
 
-	input clk, reset, wen, ren, start;
+	input clk, reset, start;
 	input [$clog2(SIZE):0] depth_A, width_A, depth_B, width_B;
 	output busy, done;		
     input wire [DATAWIDTH-1:0] a_in_0_0;
@@ -134,7 +132,7 @@ module accelerator_IP_systolicarray (
     reg [DATAWIDTH-1:0] b_mux_2;
     reg [DATAWIDTH-1:0] b_mux_3;
 
-    wire [$clog2(SIZE):0] memsel_A, memsel_B;
+    wire [$clog2(SIZE)+1:0] memsel_A, memsel_B;
 
 
     always @ (*)
@@ -190,6 +188,13 @@ module accelerator_IP_systolicarray (
             a_mux_3 = a_in_3_3;
         end 
         7 : 
+        begin 
+            a_mux_0 = 0;
+            a_mux_1 = 0;
+            a_mux_2 = 0;
+            a_mux_3 = 0;
+        end 
+        default : 
         begin 
             a_mux_0 = 0;
             a_mux_1 = 0;
@@ -258,6 +263,13 @@ module accelerator_IP_systolicarray (
             b_mux_2 = 0;
             b_mux_3 = 0;
         end 
+        default : 
+            begin 
+            a_mux_0 = 0 ;
+            a_mux_1 = 0 ;
+            a_mux_2 = 0 ;
+            a_mux_3 = 0 ;
+            end 
         endcase
     end
 

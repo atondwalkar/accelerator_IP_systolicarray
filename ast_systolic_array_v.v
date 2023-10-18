@@ -52,22 +52,22 @@ module ast_systolic_array_v (
     input [DATAWIDTH:0] b_in_1;
     input [DATAWIDTH:0] b_in_2;
     input [DATAWIDTH:0] b_in_3;
-    output reg [DATAWIDTH:0] dout_0_0;
-    output reg [DATAWIDTH:0] dout_0_1;
-    output reg [DATAWIDTH:0] dout_0_2;
-    output reg [DATAWIDTH:0] dout_0_3;
-    output reg [DATAWIDTH:0] dout_1_0;
-    output reg [DATAWIDTH:0] dout_1_1;
-    output reg [DATAWIDTH:0] dout_1_2;
-    output reg [DATAWIDTH:0] dout_1_3;
-    output reg [DATAWIDTH:0] dout_2_0;
-    output reg [DATAWIDTH:0] dout_2_1;
-    output reg [DATAWIDTH:0] dout_2_2;
-    output reg [DATAWIDTH:0] dout_2_3;
-    output reg [DATAWIDTH:0] dout_3_0;
-    output reg [DATAWIDTH:0] dout_3_1;
-    output reg [DATAWIDTH:0] dout_3_2;
-    output reg [DATAWIDTH:0] dout_3_3;
+    output wire [DATAWIDTH:0] dout_0_0;
+    output wire [DATAWIDTH:0] dout_0_1;
+    output wire [DATAWIDTH:0] dout_0_2;
+    output wire [DATAWIDTH:0] dout_0_3;
+    output wire [DATAWIDTH:0] dout_1_0;
+    output wire [DATAWIDTH:0] dout_1_1;
+    output wire [DATAWIDTH:0] dout_1_2;
+    output wire [DATAWIDTH:0] dout_1_3;
+    output wire [DATAWIDTH:0] dout_2_0;
+    output wire [DATAWIDTH:0] dout_2_1;
+    output wire [DATAWIDTH:0] dout_2_2;
+    output wire [DATAWIDTH:0] dout_2_3;
+    output wire [DATAWIDTH:0] dout_3_0;
+    output wire [DATAWIDTH:0] dout_3_1;
+    output wire [DATAWIDTH:0] dout_3_2;
+    output wire [DATAWIDTH:0] dout_3_3;
 
     wire [DATAWIDTH:0] a [SIZE+1:0][SIZE+1:0]; //internal array row connections
     wire [DATAWIDTH:0] b [SIZE+1:0][SIZE+1:0]; //internal array col connections
@@ -95,7 +95,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[0][1]), 
         .b_out(b[1][0]),
-        .acc_out(d_out_0_0)
+        .acc_out(dout_0_0)
         );
 
     ast_mac_v element_0_1 ( 
@@ -108,7 +108,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[0][2]), 
         .b_out(b[1][1]),
-        .acc_out(d_out_0_1)
+        .acc_out(dout_0_1)
         );
 
     ast_mac_v element_0_2 ( 
@@ -121,7 +121,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[0][3]), 
         .b_out(b[1][2]),
-        .acc_out(d_out_0_2)
+        .acc_out(dout_0_2)
         );
 
     ast_mac_v element_0_3 ( 
@@ -134,7 +134,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[0][4]), 
         .b_out(b[1][3]),
-        .acc_out(d_out_0_3)
+        .acc_out(dout_0_3)
         );
 
     ast_mac_v element_1_0 ( 
@@ -147,7 +147,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[1][1]), 
         .b_out(b[2][0]),
-        .acc_out(d_out_1_0)
+        .acc_out(dout_1_0)
         );
 
     ast_mac_v element_1_1 ( 
@@ -160,7 +160,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[1][2]), 
         .b_out(b[2][1]),
-        .acc_out(d_out_1_1)
+        .acc_out(dout_1_1)
         );
 
     ast_mac_v element_1_2 ( 
@@ -173,7 +173,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[1][3]), 
         .b_out(b[2][2]),
-        .acc_out(d_out_1_2)
+        .acc_out(dout_1_2)
         );
 
     ast_mac_v element_1_3 ( 
@@ -186,7 +186,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[1][4]), 
         .b_out(b[2][3]),
-        .acc_out(d_out_1_3)
+        .acc_out(dout_1_3)
         );
 
     ast_mac_v element_2_0 ( 
@@ -199,7 +199,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[2][1]), 
         .b_out(b[3][0]),
-        .acc_out(d_out_2_0)
+        .acc_out(dout_2_0)
         );
 
     ast_mac_v element_2_1 ( 
@@ -212,7 +212,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[2][2]), 
         .b_out(b[3][1]),
-        .acc_out(d_out_2_1)
+        .acc_out(dout_2_1)
         );
 
     ast_mac_v element_2_2 ( 
@@ -225,7 +225,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[2][3]), 
         .b_out(b[3][2]),
-        .acc_out(d_out_2_2)
+        .acc_out(dout_2_2)
         );
 
     ast_mac_v element_2_3 ( 
@@ -238,7 +238,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[2][4]), 
         .b_out(b[3][3]),
-        .acc_out(d_out_2_3)
+        .acc_out(dout_2_3)
         );
 
     ast_mac_v element_3_0 ( 
@@ -251,7 +251,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[3][1]), 
         .b_out(b[4][0]),
-        .acc_out(d_out_3_0)
+        .acc_out(dout_3_0)
         );
 
     ast_mac_v element_3_1 ( 
@@ -264,7 +264,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[3][2]), 
         .b_out(b[4][1]),
-        .acc_out(d_out_3_1)
+        .acc_out(dout_3_1)
         );
 
     ast_mac_v element_3_2 ( 
@@ -277,7 +277,7 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[3][3]), 
         .b_out(b[4][2]),
-        .acc_out(d_out_3_2)
+        .acc_out(dout_3_2)
         );
 
     ast_mac_v element_3_3 ( 
@@ -290,6 +290,6 @@ module ast_systolic_array_v (
         .load_en(load_en), 
         .a_out(a[3][4]), 
         .b_out(b[4][3]),
-        .acc_out(d_out_3_3)
+        .acc_out(dout_3_3)
         );
 endmodule

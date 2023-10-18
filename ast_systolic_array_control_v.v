@@ -1,20 +1,20 @@
 	`timescale 1ns / 1ps
 
 module ast_systolic_array_control_v (
- clk,
- reset,
- cycles_in,
- depth_A,
- width_B,
- start,
- load_en,
- mult_en,
- acc_en,
- memsel_A,
- memsel_B,
- done,
- busy,
- );
+     clk,
+     reset,
+     cycles_in,
+     depth_A,
+     width_B,
+     start,
+     load_en,
+     mult_en,
+     acc_en,
+     memsel_A,
+     memsel_B,
+     done,
+     busy,
+    );
 	 
 	 parameter SIZE = 4;
 	 
